@@ -1,0 +1,386 @@
+openapi: 3.0.0
+info:
+  title: 3gpp-traffic-influence
+  version: "v1"
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
+servers:
+  - url: https://{apiRoot}/3gpp-traffic-influence/v1
+    variables:
+      apiRoot:
+        default: demohost.com
+        description: apiRoot as defined in subclause 5.2.4 of 3GPP TS 29.122, excluding the https:// part.
+
+paths:
+  /{afId}/subscriptions:
+    get:
+      summary: read all of the active subscriptions for the AF
+      tags:
+        - TrafficInfluence API SCS/AS level GET Operation
+      parameters:
+        - name: afId
+          in: path
+          description: Identifier of the AF
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK. 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrafficInfluSub'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+
+    post:
+      summary: Creates a new subscription resource 
+      tags:
+        - TrafficInfluence API Subscription level POST Operation
+      parameters:
+        - name: afId
+          in: path
+          description: Identifier of the AF
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Request to create a new subscription resource
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrafficInfluSub'
+      callbacks:
+        notificationDestination:
+          '{request.body#/notificationDestination}':
+            post:
+              requestBody:  # contents of the callback message
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/EventNotification'
+              responses:
+                '204':
+                  description: No Content (successful notification)
+      responses:
+        '201':
+          description: Created (Successful creation of subscription)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrafficInfluSub'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+
+  /{afId}/subscriptions/{subscriptionId}:
+    get:
+      summary: read an active subscriptions for the SCS/AS and the subscription Id
+      tags:
+        - TrafficInfluence API Subscription level GET Operation
+      parameters:
+        - name: afId
+          in: path
+          description: Identifier of the AF
+          required: true
+          schema:
+            type: string
+        - name: subscriptionId
+          in: path
+          description: Identifier of the subscription resource
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK (Successful get the active subscription)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrafficInfluSub'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+
+    put:
+      summary: Updates/replaces an existing subscription resource
+      tags:
+        - TrafficInfluence API subscription level PUT Operation
+      parameters:
+        - name: afId
+          in: path
+          description: Identifier of the AF
+          required: true
+          schema:
+            type: string
+        - name: subscriptionId
+          in: path
+          description: Identifier of the subscription resource
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Parameters to update/replace the existing subscription
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrafficInfluSub'
+      responses:
+        '200':
+          description: OK (Successful update of the subscription)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrafficInfluSub'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+
+    patch:
+      summary: Updates/replaces an existing subscription resource
+      tags:
+        - TrafficInfluence API subscription level PATCH Operation
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/TrafficInfluSubPatch'
+      parameters:
+        - name: afId
+          in: path
+          description: Identifier of the AF
+          required: true
+          schema:
+            type: string
+        - name: subscriptionId
+          in: path
+          description: Identifier of the subscription
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK. The subscription was modified successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrafficInfluSub'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+
+    delete:
+      summary: Deletes an already existing subscription
+      tags:
+        - TrafficInfluence API Subscription level DELETE Operation
+      parameters:
+        - name: afId
+          in: path
+          description: Identifier of the AF
+          required: true
+          schema:
+            type: string
+        - name: subscriptionId
+          in: path
+          description: Identifier of the subscription resource
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content (Successful deletion of the existing subscription)
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+
+components:
+  schemas: 
+    TrafficInfluSub:
+      type: object
+      properties:
+        afServiceId:
+          type: string
+          description: Identifies a service on behalf of which the AF is issuing the request.
+        afTransId:
+          type: string
+          description: Identifies an NEF Northbound interface transaction, generated by the AF.
+        appReloIndication:
+          type: boolean
+          description: Identifies whether an application can be relocated once a location of the application has been selected.
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        externalGroupId:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
+        anyUEInd:
+          type: boolean
+          description: Identifies whether the AF request applies to any UE. This attribute shall set to "true" if applicable for any UE, otherwise, set to "false".
+        subscribedEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscribedEvent'
+          minItems: 0
+          description: Identifies the requirement to be notified of a UP path management event and the activity.
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        ipv4Addr:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ipv6Addr:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv6Addr'
+        macAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/macAddr48'
+        notifyType:
+          $ref: '#/components/schemas/NotifyType'
+        notificationDestination:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
+        requestTestNotification:
+          type: boolean
+          description: Set to true by the SCS/AS to request the SCEF to send a test notification as defined in subclause 5.2.5.3. Set to false or omitted otherwise.
+        websockNotifConfig:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
+        self:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
+        trafficFilter:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
+          minItems: 0
+          description: Identifies packet filters.
+        trafficRoutes:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrafficRoute'
+          minItems: 1
+          description: Identifies the N6 traffic routing requirement.
+        validStartTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+        validEndTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+        validGeoZoneIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Identifies a geographic zone that the AF request applies only to the traffic of UE(s) located in this specific zone.
+      required:
+        - trafficRoutes
+        - validGeoZoneIds 
+    TrafficInfluSubPatch:
+      type: object
+      properties:
+        afTransId:
+          type: string
+          description: Identifies an NEF Northbound interface transaction, generated by the AF. 
+        appReloIndication:
+          type: boolean
+          description: Identifies whether an application can be relocated once a location of the application has been selected.
+        trafficFilter:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
+        trafficRoutes:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrafficRoute'
+          minItems: 1
+          description: Identifies the N6 traffic routing requirement.
+        validStartTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+        validEndTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+        validGeoZoneIds:
+          type: array
+          items:
+            type: string
+          minItems: 0
+          description: Identifies a geographic zone that the AF request applies only to the traffic of UE(s) located in this specific zone.
+    TrafficRoute:
+      type: object
+      properties:
+        dnai:
+          type: string
+          description: Identifies an NEF Northbound interface transaction, generated by the AF.
+        routingProfileId:
+          type: integer
+          description: Identifies an N6 traffic routing profile associated with the DNAI.
+        trafficRouteInfo:
+          $ref: '#/components/schemas/TrafficRouteInfo'
+      required:
+        - dnai
+    TrafficRouteInfo:
+      type: object
+      properties:
+        ipv6Addr:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv6Addr'
+        portNum:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Port'
+    EventNotification:
+      type: object
+      properties:
+        afTransId:
+          type: string
+          description: Identifies an NEF Northbound interface transaction, generated by the AF.
+        activityStatus:
+          type: boolean
+          description: Identifies whether the AF request is active or inactive. Shall be present if the "subscribedEvent" sets to "ACTIVITY".
+        notifyType:
+          $ref: '#/components/schemas/NotifyType'
+        sourceTrafficRoute:
+          $ref: '#/components/schemas/TrafficRoute'
+        subscribedEvent:
+          $ref: '#/components/schemas/SubscribedEvent'
+        targetTrafficRoute:
+          $ref: '#/components/schemas/TrafficRoute'
+      required:
+        - notifyType
+        - subscribedEvent
+    SubscribedEvent:
+      anyOf:
+      - type: string
+        enum:
+          - ACTIVITY
+          - CHANGE_OF_DNAI
+      - type: string
+      description: >
+        Possible values are
+        - ACTIVITY: The AF requests to be notified when the AF request become active or inactive in the SMF.
+        - CHANGE_OF_DNAI: The AF requests to be notified when the DNAI changes for the PDU session.
+    NotifyType:
+      anyOf:
+      - type: string
+        enum:
+          - EARLY
+          - LATE
+          - EARLY_LATE
+      - type: string
+      description: >
+        Possible values are
+        - ACTIVITY: The AF requests to be notified before the UP path is configured.
+        - LATE: The AF requests to be notified after the UP path is configured.
+        - EARLY_LATE: The AF requests to be notified before and after the UP path is configured.

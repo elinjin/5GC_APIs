@@ -1,0 +1,441 @@
+openapi: 3.0.0
+info:
+  title: 3gpp-pfd-management
+  version: "v1"
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
+servers:
+  - url: https://{apiRoot}/3gpp-pfd-management/v1
+    variables:
+      apiRoot:
+        default: demohost.com
+        description: apiRoot as defined in subclause subclause 5.2.4 of 3GPP TS 29.122, excluding the https:// part.
+paths:
+  /{scsAsId}/transactions:
+    get:
+      parameters:
+        - name: scsAsId
+          in: path
+          description: Identifier of the SCS/AS as defined in subclause subclause 5.2.4 of 3GPP TS 29.122.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK. All transactions related to the request URI are returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PfdManagement'
+        default:
+          description: Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+    post:
+      parameters:
+        - name: scsAsId
+          in: path
+          description: Identifier of the SCS/AS as defined in subclause subclause 5.2.4 of 3GPP TS 29.122.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PfdManagement'
+          description: Create a new transaction for PFD management.
+      responses:
+        '201':
+          description: Created. The transaction was created successfully. The SCEF shall return the created transaction in the response payload body. PfdReport may be included to provide detailed failure information for some applications.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PfdManagement'
+        '500':
+          description: The PFDs for all applications were not created successfully. PfdReport is included with detailed information.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PfdReport'
+                minItems: 1
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+  /{scsAsId}/transactions/{transactionId}:
+    get:
+      parameters:
+        - name: scsAsId
+          in: path
+          description: Identifier of the SCS/AS as defined in subclause subclause 5.2.4 of 3GPP TS 29.122.
+          required: true
+          schema:
+            type: string
+        - name: transactionId
+          in: path
+          description: Transaction ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK. The transaction information related to the request URI is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PfdManagement'
+        default:
+          description: Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+    put:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PfdManagement'
+          description: Change information in PFD management transaction.
+      parameters:
+        - name: scsAsId
+          in: path
+          description: Identifier of the SCS/AS as defined in subclause subclause 5.2.4 of 3GPP TS 29.122.
+          required: true
+          schema:
+            type: string
+        - name: transactionId
+          in: path
+          description: Transaction ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK. The transaction was modified successfully. The SCEF shall return an updated transaction in the response payload body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PfdManagement'
+        '500':
+          description: The PFDs for all applications were not updated successfully. PfdReport is included with detailed information.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PfdReport'
+                minItems: 1
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+    delete:
+      parameters:
+        - name: scsAsId
+          in: path
+          description: Identifier of the SCS/AS as defined in subclause subclause 5.2.4 of 3GPP TS 29.122.
+          required: true
+          schema:
+            type: string
+        - name: transactionId
+          in: path
+          description: Transaction ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content. The transaction was deleted successfully. The payload body shall be empty.
+        default:
+          description: Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+  /{scsAsId}/transactions/{transactionId}/applications/{appId}:
+    get:
+      parameters:
+        - name: scsAsId
+          in: path
+          description: Identifier of the SCS/AS as defined in subclause subclause 5.2.4 of 3GPP TS 29.122.
+          required: true
+          schema:
+            type: string
+        - name: transactionId
+          in: path
+          description: Transaction ID
+          required: true
+          schema:
+            type: string
+        - name: appId
+          in: path
+          description: Identifier of the application
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK. The application information related to the request URI is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PfdData'
+        default:
+          description: Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+    put:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PfdData'
+          description: Change information in application.
+      parameters:
+        - name: scsAsId
+          in: path
+          description: Identifier of the SCS/AS as defined in subclause subclause 5.2.4 of 3GPP TS 29.122.
+          required: true
+          schema:
+            type: string
+        - name: transactionId
+          in: path
+          description: Transaction ID
+          required: true
+          schema:
+            type: string
+        - name: appId
+          in: path
+          description: Identifier of the application
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK. The application resource was modified successfully. The SCEF shall return an updated application resource in the response payload body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PfdData'
+        '500':
+          description: The PFDs for the application were not updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PfdReport'
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#TS29122_CommonData.yaml/components/schemas/ProblemDetails'
+    patch:
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/PfdData'
+          description: Change information in PFD management transaction.
+      parameters:
+        - name: scsAsId
+          in: path
+          description: Identifier of the SCS/AS as defined in subclause subclause 5.2.4 of 3GPP TS 29.122.
+          required: true
+          schema:
+            type: string
+        - name: transactionId
+          in: path
+          description: Transaction ID
+          required: true
+          schema:
+            type: string
+        - name: appId
+          in: path
+          description: Identifier of the application
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK. The transaction was modified successfully. The SCEF shall return an updated transaction in the response payload body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PfdData'
+        '500':
+          description: The PFDs for the application were not updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PfdReport'
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+    delete:
+      parameters:
+        - name: scsAsId
+          in: path
+          description: Identifier of the SCS/AS as defined in subclause subclause 5.2.4 of 3GPP TS 29.122.
+          required: true
+          schema:
+            type: string
+        - name: transactionId
+          in: path
+          description: Transaction ID
+          required: true
+          schema:
+            type: string
+        - name: appId
+          in: path
+          description: Identifier of the application
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content. The application was deleted successfully. The payload body shall be empty.
+        default:
+          description: Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+components:
+  schemas: 
+    PfdManagement:
+      type: object
+      properties:
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        pfdDatas:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PfdData'
+          minProperties: 0
+          description: Each element uniquely identifies the PFDs for an external application identifier. Each element is identified in the map via an external application identifier as key. The response shall include successfully provisioned PFD data of application(s).
+        pfdReports:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PfdReport'
+          minProperties: 0
+          description: Supplied by the SCEF and contains the external application identifiers for which PFD(s) are not added or modified successfully. The failure reason is also included. Each element provides the related information for one or more external application identifier(s) and is identified in the map via the failure identifier as key.
+          readOnly: true
+      required:
+        - supportedFeatures
+    PfdData:
+      type: object
+      properties:
+        externalAppId:
+          type: string
+          description: Each element uniquely external application identifier
+        self:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
+        pfds:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Pfd'
+          description: Contains the PFDs of the external application identifier. Each PFD is identified in the map via a key containing the PFD identifier. 
+        allowedDelay:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
+      required:
+        - externalAppId
+        - pfds
+    Pfd:
+      type: object
+      properties:
+        pfdId:
+          type: string
+          description: Identifies a PDF of an application identifier.
+        flowDescriptions:
+          type: array
+          items:
+            type: string
+          minItems: 0
+          description: Represents a 3-tuple with protocol, server ip and server port for UL/DL application traffic. The content of the string has the same encoding as the IPFilterRule AVP value as defined in IETF RFC 6733 [46].
+        urls:
+          type: array
+          items:
+            type: string
+          minItems: 0
+          description: Indicates a URL or a regular expression which is used to match the significant parts of the URL.
+        domainNames:
+          type: array
+          items:
+            type: string
+          minItems: 0
+          description: Indicates an FQDN or a regular expression as a domain name matching criteria.
+      required:
+        - pfdId
+    PfdReport:
+      type: object
+      properties:
+        externalAppId:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Identifies the external application identifier(s) which PFD(s) are not added or modified successfully
+        failureCode:
+          $ref: '#/components/schemas/FailureCode'
+        cachingTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
+      required:
+        - externalAppId
+        - failureCode
+    FailureCode:
+      anyOf:
+      - type: string
+        enum:
+          - MALFUNCTION
+          - RESOURCE_LIMITATION
+          - SHORT_DELAY
+          - SHORT_DELAY_STORED
+          - APP_ID_DUPLICATED
+          - OTHER_REASON
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - MALFUNCTION: This value indicates that something functions wrongly in PFD provisioning or the PFD provisioning does not function at all.
+        - RESOURCE_LIMITATION: This value indicates there is resource limitation for PFD storage.
+        - SHORT_DELAY: This value indicates that the allowed delay is too short and PFD(s) are not stored.
+        - SHORT_DELAY_STORED: This value indicates that the allowed delay is too short but PFD(s) are still stored.
+        - APP_ID_DUPLICATED: The received external application identifier(s) are already provisioned.
+        - OTHER_REASON: Other reason unspecified.

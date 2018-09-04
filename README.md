@@ -35,6 +35,30 @@ The links below will open the Swagger Editor and auto-load the OpenAPI YAML file
 * [SM Service](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29540_Nsmsf_SMService.yaml)
 ## 5G-EIR
 * [Equipment Identity Check](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29511_N5g-eir_EquipmentIdentityCheck.yaml)
+
+## NEF
+
+these API specifications are from TS 29.522(15.0.0), and TS 29.122(15.0.0)
+
+* [AF Influence TR](https://editor.swagger.io/?url=https://raw.githubusercontent.com/elinjin/5GC_APIs/master/TS29522_Nnef_TrafficInfluence.yaml)
+
+* [Monitoring Event](https://editor.swagger.io/?url=https://raw.githubusercontent.com/elinjin/5GC_APIs/master/TS29122_Nnef_MonitoringEvent.yaml)
+
+* [Background Data Transfer](https://editor.swagger.io/?url=https://raw.githubusercontent.com/elinjin/5GC_APIs/master/TS29122_Nnef_BDT.yaml)
+
+* [Device Triggering](https://editor.swagger.io/?url=https://raw.githubusercontent.com/elinjin/5GC_APIs/master/TS29122_Nnef_DeviceTriggering.yaml)
+
+* [Communication Pattern Provisioning](https://editor.swagger.io/?url=https://raw.githubusercontent.com/elinjin/5GC_APIs/master/TS29122_Nnef_CpProvisioning.yaml)
+
+* [PFD Management](https://editor.swagger.io/?url=https://raw.githubusercontent.com/elinjin/5GC_APIs/master/TS29122_Nnef_PFDF.yaml)
+
+* [Chargeable Party](https://editor.swagger.io/?url=https://raw.githubusercontent.com/elinjin/5GC_APIs/master/TS29122_Nnef_ChargeableParty.yaml)
+
+* [Non-IP Data Delivery](https://editor.swagger.io/?url=https://raw.githubusercontent.com/elinjin/5GC_APIs/master/TS29122_Nnef_NIDD.yaml)
+
+* [AS Session with QoS](https://editor.swagger.io/?url=https://raw.githubusercontent.com/elinjin/5GC_APIs/master/TS29122_Nnef_AsSessionWithQos.yaml)
+
+
 ## Common Data Types
 * [Common Data](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml)
 
